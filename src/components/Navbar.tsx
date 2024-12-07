@@ -15,7 +15,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-  const { address, isConnected, caipAddress, status } = useAppKitAccount();
+  const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
 
   const handleMenuToggle = () => {
@@ -64,7 +64,7 @@ export default function Navbar() {
                 variant="ghost"
                 className="flex items-center gap-1 text-white hover:text-white hover:bg-white/10 text-[16px] uppercase"
               >
-                Trade
+                Spot Grid
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
