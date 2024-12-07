@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import ConfirmationModal from "../components/confirmation-modal/ConfirmationModal";
 import TradingViewWidget from "../components/TradingView";
-import { OrderBook, Symbols, type Trade } from "../types";
+import { DualDexTradeParams, OrderBook, Symbols, type Trade } from "../types";
 import { getSymbolPrice } from "@/lib/GetSymbolPrice";
 import {
   DropdownMenu,
@@ -18,6 +18,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import {
+  useAccount,
+  useSendTransaction,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { useDexTrade } from "../hooks/useDexTrade";
+import { useToast } from "../hooks/use-toast";
 
 const container = {
   hidden: { opacity: 0 },
@@ -48,31 +55,58 @@ export default function Trade() {
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [currentInvestmentType, setCurrentInvestmentType] = useState("");
   const navigate = useNavigate();
+  const [transactionHash, setTransactionHash] = useState<string>("");
+  const { address } = useAccount();
+  const { submitTrade } = useDexTrade();
+  const { toast } = useToast();
+  const { data: hash, sendTransaction } = useSendTransaction();
 
-  const form = useForm<Trade>({
+  const form = useForm<DualDexTradeParams>({
     defaultValues: {
-      orderType: "LONG",
-      contractSize: 1,
-      leverage: 1,
-      limitPrice: 0,
-      symbol: undefined,
-      margin: 0,
-      ethPrice: 0,
+      chainSlug: 11155111,
+      router1: "0x2CB45Edb4517d5947aFdE3BEAbF95A582506858B",
+      router2: "0xA1B1742e9c32C7cAa9726d8204bD5715e3419861",
+      token1: "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+      token2: "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB",
+      amount: 10000n,
     },
   });
 
   const { register, handleSubmit, setValue, watch } = form;
   const trade = watch();
 
-  useEffect(() => {
-    getSymbolPrice("ETHUSD").then((val) => {
-      setValue("ethPrice", val);
-    });
-  }, []);
-
   const handleInvestmentTypeChange = (type: string) => {
     setCurrentInvestmentType(type);
   };
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: transactionHash as `0x${string}`,
+    });
+
+  const handleTradeSubmit = async (data: Trade) => {
+    console.log("Here");
+    if (!address) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to trade",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Trade Failed",
+        description:
+          error instanceof Error ? error.message : "Failed to execute trade",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <motion.div
       className="min-h-screen py-20 lg:px-4 text-white"
@@ -203,11 +237,13 @@ export default function Trade() {
 
                     <Button
                       className="w-full mt-6 bg-gradient-to-r from-[#d7c7ff] to-[#c5fedf] text-black font-bold text-lg h-12 hover:opacity-90"
-                      onClick={handleSubmit(() =>
-                        setConfirmationModalOpen(true)
-                      )}
+                      onClick={() => handleTradeSubmit(trade)}
                     >
-                      Submit Order
+                      {!address
+                        ? "Connect Wallet"
+                        : isConfirming
+                        ? "Confirming..."
+                        : "Submit Order"}
                     </Button>
                   </div>
                 )}

@@ -18,6 +18,10 @@ export default function Navbar() {
   const { address, isConnected } = useAppKitAccount();
   const { disconnect } = useDisconnect();
 
+  useEffect(() => {
+    console.log(address);
+  });
+
   const handleMenuToggle = () => {
     setMenuOpen(!menuOpen);
   };

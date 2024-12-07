@@ -24,3 +24,23 @@ export interface OrderBook {
   contractAddress: string;
   timestamp: string;
 }
+
+export interface IDualDexTrade {
+  executeDualDexTrade: (
+    chainSlug: number,
+    router1: string,
+    router2: string,
+    token1: string,
+    token2: string,
+    amount: bigint
+  ) => Promise<void>;
+}
+
+export interface DualDexTradeParams {
+  chainSlug: number;
+  router1: string;
+  router2: string;
+  token1: string;
+  token2: string;
+  amount: bigint;
+}
