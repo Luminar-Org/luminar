@@ -1,7 +1,7 @@
 export enum Symbols {
-  BTCUSD = "PYTH:BTCUSD",
   ETHUSD = "PYTH:ETHUSD",
-  SOLUSD = "PYTH:SOLUSD",
+  ARBUSD = "PYTH:ARBUSD",
+  OPUSD = "PYTH:OPUSD",
 }
 
 export interface Trade {
