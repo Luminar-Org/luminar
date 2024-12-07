@@ -13,6 +13,7 @@ import { useAppKitAccount, useDisconnect } from "@reown/appkit/react";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const { address, isConnected, caipAddress, status } = useAppKitAccount();
   const { disconnect } = useDisconnect();
@@ -22,12 +23,30 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      if (offset > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
     console.log(address);
   }, [address]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-      <div className="flex flex-row pt-5 pb-3 px-4 gap-5 items-center glass text-white font-semibold">
+      <div
+        className={`flex flex-row pt-5 pb-3 px-4 gap-5 items-center text-white font-semibold transition-colors duration-300 ${
+          scrolled ? "bg-[#0F1117]" : "glass"
+        }`}
+      >
         <Link
           to="/"
           className="flex flex-row gap-1 text-xl items-center uppercase"
