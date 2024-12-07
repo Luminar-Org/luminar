@@ -1,11 +1,11 @@
 import { createAppKit } from "@reown/appkit/react";
 
-import { WagmiProvider } from "wagmi";
-import { arbitrum, mainnet, AppKitNetwork } from "@reown/appkit/networks";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { ReactNode } from "react";
 import { socket } from "@/config";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { AppKitNetwork } from "@reown/appkit/networks";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
+import { WagmiProvider } from "wagmi";
 
 const queryClient = new QueryClient();
 
@@ -19,8 +19,6 @@ const metadata = {
 };
 
 const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
-  mainnet,
-  arbitrum,
   socket,
 ];
 

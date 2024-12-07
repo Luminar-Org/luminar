@@ -1,6 +1,6 @@
-import { http, createConfig, injected } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
 import { type Chain } from "viem";
+import { createConfig, http, injected } from "wagmi";
+import { mainnet, sepolia } from "wagmi/chains";
 
 export const socket = {
   id: 7625382,
@@ -18,7 +18,7 @@ export const socket = {
 } as const satisfies Chain;
 
 export const config = createConfig({
-  chains: [mainnet, sepolia, socket],
+  chains: [socket],
   connectors: [
     injected({
       shimDisconnect: true,

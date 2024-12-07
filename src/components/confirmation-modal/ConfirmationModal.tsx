@@ -25,12 +25,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <div className="space-y-4 py-4">
           <div className="flex flex-col gap-2">
             <h3 className="font-semibold text-lg">
-              {trade.contractSize} {trade.symbol}
+              {/* {trade.contractSize} {trade.symbol} */}
             </h3>
             <p className="text-sm text-muted-foreground">
-              Price: {trade.limitPrice}
+              {/* Price: {trade.limitPrice} */}
             </p>
-            <p className="text-sm text-muted-foreground">{trade.symbol}</p>
+            {/* <p className="text-sm text-muted-foreground">{trade.symbol}</p> */}
           </div>
         </div>
 

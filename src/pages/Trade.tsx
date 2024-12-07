@@ -1,30 +1,29 @@
-import { useEffect, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { Slider } from "@/components/ui/slider";
-import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import ConfirmationModal from "../components/confirmation-modal/ConfirmationModal";
-import TradingViewWidget from "../components/TradingView";
-import { DualDexTradeParams, OrderBook, Symbols, type Trade } from "../types";
-import { getSymbolPrice } from "@/lib/GetSymbolPrice";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useAccount,
-  useSendTransaction,
   useWaitForTransactionReceipt,
+  useWriteContract,
 } from "wagmi";
-import { useDexTrade } from "../hooks/useDexTrade";
+import { abi } from "../../public/DexAggregatorGateway.json";
+import ConfirmationModal from "../components/confirmation-modal/ConfirmationModal";
+import TradingViewWidget from "../components/TradingView";
 import { useToast } from "../hooks/use-toast";
+import { useDexTrade } from "../hooks/useDexTrade";
+import { DualDexTradeParams, OrderBook, Symbols } from "../types";
 
 const container = {
   hidden: { opacity: 0 },
@@ -46,11 +45,9 @@ const item = {
   },
 };
 
-const leverageMarks = [1, 2, 5, 10];
 
 export default function Trade() {
   const { symbol } = useParams();
-  const [price, setPrice] = useState<number>(0);
   const [orderBookEntries, setOrderBookEntries] = useState<OrderBook[]>([]);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [currentInvestmentType, setCurrentInvestmentType] = useState("");
@@ -59,7 +56,7 @@ export default function Trade() {
   const { address } = useAccount();
   const { submitTrade } = useDexTrade();
   const { toast } = useToast();
-  const { data: hash, sendTransaction } = useSendTransaction();
+  const { data: hash, writeContract, isPending } = useWriteContract();
 
   const form = useForm<DualDexTradeParams>({
     defaultValues: {
@@ -84,18 +81,25 @@ export default function Trade() {
       hash: transactionHash as `0x${string}`,
     });
 
-  const handleTradeSubmit = async (data: Trade) => {
+  const handleTradeSubmit = async (data: DualDexTradeParams) => {
     console.log("Here");
-    if (!address) {
-      toast({
-        title: "Connect Wallet",
-        description: "Please connect your wallet to trade",
-        variant: "destructive",
-      });
-      return;
-    }
 
     try {
+      console.log("Here 2");
+      writeContract({
+        address: "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
+        abi,
+        functionName: "executeDualDexTrade",
+        args: [
+          data.chainSlug,
+          data.router1,
+          data.router2,
+          data.token1,
+          data.token2,
+          data.amount,
+        ],
+      });
+      console.log("Here 3");
     } catch (error) {
       console.error(error);
       toast({
@@ -114,6 +118,7 @@ export default function Trade() {
       initial="hidden"
       animate="show"
     >
+      {    !isPending && 
       <div className="flex flex-row gap-6 text-white">
         <motion.div className="flex flex-col gap-6 w-full" variants={item}>
           <Card className="h-[70vh] bg-white/5 backdrop-blur-sm border-white/10">
@@ -226,13 +231,9 @@ export default function Trade() {
                       <Input
                         type="number"
                         min={10}
-                        {...register("contractSize")}
+                        {...register("amount")}
                         className="bg-white/5 border-white/10 text-lg text-white"
                       />
-                      <span className="text-right text-white/60">
-                        $
-                        {(trade.contractSize * (price / 1000)).toLocaleString()}
-                      </span>
                     </div>
 
                     <Button
@@ -249,63 +250,10 @@ export default function Trade() {
                 )}
               </CardContent>
             </Card>
-
-            {/* <Card className="h-[35vh] bg-white/5 backdrop-blur-sm border-white/10">
-              <CardHeader>
-                <h1 className="text-2xl font-bold">Order Book</h1>
-                <div className="h-px bg-white/10 w-full my-2" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-6">
-                  <div className="w-1/2">
-                    <h2 className="text-[#c5fedf] font-bold mb-4 text-lg">
-                      Long
-                    </h2>
-                    <div className="space-y-3">
-                      {orderBookEntries
-                        .filter((item) => item.type === "buy")
-                        .slice(0, 5)
-                        .map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="flex justify-between items-center"
-                          >
-                            <span className="text-white/80">{item.amount}</span>
-                            <Badge variant="default" className="px-4 py-1">
-                              ${item.price.toLocaleString()}
-                            </Badge>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                  <div className="w-1/2">
-                    <h2 className="text-red-400 font-bold mb-4 text-lg">
-                      Short
-                    </h2>
-                    <div className="space-y-3">
-                      {orderBookEntries
-                        .filter((item) => item.type === "sell")
-                        .slice(0, 5)
-                        .map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="flex justify-between items-center"
-                          >
-                            <Badge variant="destructive" className="px-4 py-1">
-                              ${item.price.toLocaleString()}
-                            </Badge>
-                            <span className="text-white/80">{item.amount}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card> */}
           </motion.div>
         </FormProvider>
       </div>
-
+}
       <ConfirmationModal
         trade={trade}
         onCancel={() => setConfirmationModalOpen(false)}
