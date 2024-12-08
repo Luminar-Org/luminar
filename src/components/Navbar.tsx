@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ChevronDown, User, Menu as MenuIcon, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Symbols } from "../types";
 import { useAppKitAccount, useDisconnect } from "@reown/appkit/react";
+import { ChevronDown, Menu as MenuIcon, User, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Symbols } from "../types";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -99,7 +99,7 @@ export default function Navbar() {
         <div className="hidden lg:block ml-auto">
           {!isConnected ? (
             <button
-              className={`w-[15rem] items-center gap-2 rounded-md py-2 px-3 text-sm/6 font-semibold border-[1.5px] glass border-white
+              className={`w-[15rem] items-center gap-2 rounded-md py-2 px-3 text-sm/6 font-semibold glass
              `}
             >
               <appkit-button />
