@@ -19,11 +19,9 @@ import {
   useWriteContract,
 } from "wagmi";
 import { abi } from "../../public/DexAggregatorGateway.json";
-import ConfirmationModal from "../components/confirmation-modal/ConfirmationModal";
 import TradingViewWidget from "../components/TradingView";
 import { useToast } from "../hooks/use-toast";
-import { useDexTrade } from "../hooks/useDexTrade";
-import { DualDexTradeParams, OrderBook, Symbols } from "../types";
+import { DualDexTradeParams, Symbols } from "../types";
 
 const container = {
   hidden: { opacity: 0 },
@@ -48,13 +46,9 @@ const item = {
 
 export default function Trade() {
   const { symbol } = useParams();
-  const [orderBookEntries, setOrderBookEntries] = useState<OrderBook[]>([]);
-  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [currentInvestmentType, setCurrentInvestmentType] = useState("");
   const navigate = useNavigate();
-  const [transactionHash, setTransactionHash] = useState<string>("");
   const { address } = useAccount();
-  const { submitTrade } = useDexTrade();
   const { toast } = useToast();
   const { data: hash, writeContract, isPending } = useWriteContract();
 
@@ -69,7 +63,7 @@ export default function Trade() {
     },
   });
 
-  const { register, handleSubmit, setValue, watch } = form;
+  const { register, watch } = form;
   const trade = watch();
 
   const handleInvestmentTypeChange = (type: string) => {
@@ -78,14 +72,12 @@ export default function Trade() {
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
-      hash: transactionHash as `0x${string}`,
+      hash: hash as `0x${string}`,
     });
 
   const handleTradeSubmit = async (data: DualDexTradeParams) => {
-    console.log("Here");
 
     try {
-      console.log("Here 2");
       writeContract({
         address: "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f",
         abi,
@@ -99,7 +91,10 @@ export default function Trade() {
           data.amount,
         ],
       });
-      console.log("Here 3");
+
+      if(isConfirmed){
+        console.log("Confirmed Transaction")
+      }
     } catch (error) {
       console.error(error);
       toast({
@@ -137,7 +132,7 @@ export default function Trade() {
                   <h2>Price</h2>
                   <div>Order Type</div>
                 </div>
-                {orderBookEntries.slice(0, 5).map((item, idx) => (
+                {/* {orderBookEntries.slice(0, 5).map((item, idx) => (
                   <div
                     key={idx}
                     className="justify-between flex flex-row items-center"
@@ -153,7 +148,7 @@ export default function Trade() {
                       {item.type === "buy" ? "Long" : "Short"}
                     </Badge>
                   </div>
-                ))}
+                ))} */}
               </div>
             </CardContent>
           </Card>
@@ -194,6 +189,7 @@ export default function Trade() {
                   </DropdownMenu>
                 </div>
                 {currentInvestmentType === "" ? (
+                  <div className="flex flex-col">
                   <div className="flex flex-col gap-4 text-white border-white/10 hover:border-white border p-4 rounded-md transition-all">
                     <div className="flex flex-row">
                       <div className="flex flex-col gap-2">
@@ -221,6 +217,63 @@ export default function Trade() {
                     >
                       <span className="text-sm">Invest</span>
                     </button>
+                  </div>
+                  <div className="flex flex-col gap-4 text-white border-white/10 hover:border-white border p-4 rounded-md transition-all">
+                    <div className="flex flex-row">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm">{symbol}</span>
+                        <Badge variant="outline" className="text-white text-xs">
+                          Spot Grid
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <div className="flex flex-col text-xs">
+                        <span>10 USDT</span>
+                        <span className="text-white/60">Min Investment</span>
+                      </div>
+                      <div className="flex flex-col text-xs">
+                        <span>7-30 Days</span>
+                        <span className="text-white/60">
+                          Recommended Duration
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      className="ml-auto w-fit flex items-center gap-1 text-white hover:text-white hover:bg-white/10 text-[16px] px-4 py-1 rounded-full border-white/60 border"
+                      onClick={() => handleInvestmentTypeChange("Xagent")}
+                    >
+                      <span className="text-sm">Invest</span>
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-4 text-white border-white/10 hover:border-white border p-4 rounded-md transition-all">
+                    <div className="flex flex-row">
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm">{symbol}</span>
+                        <Badge variant="outline" className="text-white text-xs">
+                          Spot Grid
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <div className="flex flex-col text-xs">
+                        <span>10 USDT</span>
+                        <span className="text-white/60">Min Investment</span>
+                      </div>
+                      <div className="flex flex-col text-xs">
+                        <span>7-30 Days</span>
+                        <span className="text-white/60">
+                          Recommended Duration
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      className="ml-auto w-fit flex items-center gap-1 text-white hover:text-white hover:bg-white/10 text-[16px] px-4 py-1 rounded-full border-white/60 border"
+                      onClick={() => handleInvestmentTypeChange("Xagent")}
+                    >
+                      <span className="text-sm">Invest</span>
+                    </button>
+                  </div>
                   </div>
                 ) : (
                   <div>
@@ -254,11 +307,6 @@ export default function Trade() {
         </FormProvider>
       </div>
 }
-      <ConfirmationModal
-        trade={trade}
-        onCancel={() => setConfirmationModalOpen(false)}
-        open={confirmationModalOpen}
-      />
     </motion.div>
   );
 }

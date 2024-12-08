@@ -1,10 +1,9 @@
-import {
-  useWriteContract,
-  useWaitForTransactionReceipt,
-  useChainId,
-} from "wagmi";
 import type { Address } from "viem";
 import { parseEther } from "viem";
+import {
+  useChainId,
+  useWriteContract,
+} from "wagmi";
 
 const DEX_GATEWAY_ADDRESS = "0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f";
 
