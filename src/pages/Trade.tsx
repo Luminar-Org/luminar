@@ -190,13 +190,16 @@ export default function Trade() {
                 </div>
                 {currentInvestmentType === "" ? (
                   <div className="flex flex-col">
-                  <div className="flex flex-col gap-4 text-white border-white/10 hover:border-white border p-4 rounded-md transition-all">
+                  <div className="flex flex-col gap-4 text-white border-white/10 hover:border-white border p-4 rounded-md transition-all ">
                     <div className="flex flex-row">
                       <div className="flex flex-col gap-2">
                         <span className="text-sm">{symbol}</span>
                         <Badge variant="outline" className="text-white text-xs">
                           Spot Grid
                         </Badge>
+                      </div>
+                      <div className="text-sm ml-auto">
+                        Balanced
                       </div>
                     </div>
                     <div className="flex flex-row justify-between">
@@ -225,6 +228,9 @@ export default function Trade() {
                         <Badge variant="outline" className="text-white text-xs">
                           Spot Grid
                         </Badge>
+                      </div>                      
+                      <div className="text-sm ml-auto">
+                        Risky
                       </div>
                     </div>
                     <div className="flex flex-row justify-between">
@@ -253,6 +259,9 @@ export default function Trade() {
                         <Badge variant="outline" className="text-white text-xs">
                           Spot Grid
                         </Badge>
+                      </div>                      
+                      <div className="text-sm ml-auto">
+                        Conservative
                       </div>
                     </div>
                     <div className="flex flex-row justify-between">

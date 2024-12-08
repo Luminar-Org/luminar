@@ -1,7 +1,8 @@
-import { ArrowRight, Bot, Link2, LineChart, Rocket, Zap } from "lucide-react";
+import RoadmapComponent from "@/components/Roadmap";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { ArrowRight, Bot, LineChart, Link2, Rocket, Zap } from "lucide-react";
 
 const container = {
   hidden: { opacity: 0 },
@@ -28,9 +29,15 @@ const item = {
 const features = [
   {
     icon: <Bot className="h-6 w-6 text-black" />,
-    title: "AI-Driven Trading Strategies",
+    title: "Autonomous Arbitrage",
     description:
-      "Machine learning models that optimize arbitrage opportunities and adapt to volatile market conditions dynamically",
+      "Automatically detect and execute arbitrage opportunities across chains with minimal latency",
+  },
+  {
+    icon: <Zap className="h-6 w-6 text-black" />,
+    title: "High-Frequency Trading",
+    description:
+      "Leverage high-speed execution with horizontal scaling across rollups and chains for competitive edge",
   },
   {
     icon: <Link2 className="h-6 w-6 text-black" />,
@@ -39,10 +46,10 @@ const features = [
       "Access and aggregate liquidity from multiple blockchains and DEXs in real-time for best price execution",
   },
   {
-    icon: <Zap className="h-6 w-6 text-black" />,
-    title: "High-Frequency Trading",
+    icon: <Bot className="h-6 w-6 text-black" />,
+    title: "AI-Driven Trading Strategies",
     description:
-      "Leverage high-speed execution with horizontal scaling across rollups and chains for competitive edge",
+      "Machine learning models that optimize arbitrage opportunities and adapt to volatile market conditions dynamically",
   },
   {
     icon: <LineChart className="h-6 w-6 text-black" />,
@@ -55,12 +62,6 @@ const features = [
     title: "Gas Optimization",
     description:
       "AI-powered analysis to reduce transaction costs by selecting optimal chains and minimizing fees",
-  },
-  {
-    icon: <Bot className="h-6 w-6 text-black" />,
-    title: "Autonomous Arbitrage",
-    description:
-      "Automatically detect and execute arbitrage opportunities across chains with minimal latency",
   },
 ];
 
@@ -330,6 +331,7 @@ export default function Home() {
           </motion.div>
         </section>
       </div>
+      <RoadmapComponent/>
     </main>
   );
 }
